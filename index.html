@@ -127,10 +127,18 @@
 
     // カンマ区切りのフォーマット関数
     function formatNumber(value, decimals = 4) {
-      if (value === "N/A" || isNaN(value)) return "N/A";
-      const parts = Number(value).toFixed(decimals).split(".");
-      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      return parts.join(".");
+        // 数値に変換できない場合は "N/A" を返す
+        if (value === "N/A" || isNaN(Number(value))) return "N/A";
+
+        // 数値に変換してから処理
+        const numValue = Number(value);
+        const parts = numValue.toFixed(decimals).split(".");
+        
+        // 整数部分にカンマを追加
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        
+        // 小数部分を結合して返す
+        return parts.join(".");
     }
 
     async function fetchPrices() {
