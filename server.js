@@ -151,7 +151,8 @@ async function getUSDTPrices(exchangeRates) {
       prices.push({
         exchange: exchange.name,
         country: exchange.country,
-        localPrice: `${priceInLocalCurrency.toFixed(4)} ${exchange.currency}`,
+        currency: exchange.currency,
+        localPrice: priceInLocalCurrency.toFixed(4),
         priceInJPY: priceInJPY.toFixed(4),
       });
     } catch (error) {
@@ -159,6 +160,7 @@ async function getUSDTPrices(exchangeRates) {
       prices.push({
         exchange: exchange.name,
         country: exchange.country,
+        currency: exchange.currency,
         localPrice: "N/A",
         priceInJPY: "N/A",
       });
