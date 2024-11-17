@@ -119,6 +119,9 @@ async function getUSDTPrices(exchangeRates) {
   for (const exchange of exchanges) {
     try {
       const response = await fetch(exchange.api);
+      if (!response.ok) {
+        throw new Error(`${exchange.name}　API Error: ${response.status} ${response.statusText}`);
+      }
       const data = await response.json();
 
        // デバッグログ: データを確認
@@ -193,6 +196,23 @@ app.get("/api/prices", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch data" });
   }
 });
+
+// // Binance APIプロキシ
+// const BINANCE_API_URL = "https://api.binance.com/api/v3/ticker/price?symbol=USDTBVND";
+
+// app.get("/api/binance", async (req, res) => {
+//   try {
+//     const response = await fetch(BINANCE_API_URL);
+//     if (!response.ok) {
+//       throw new Error(`Binance API Error: ${response.status} ${response.statusText}`);
+//     }
+//     const data = await response.json();
+//     res.json(data);
+//   } catch (error) {
+//     console.error("Error fetching Binance data:", error.message, error.stack);
+//     res.status(500).json({ error: "Failed to fetch Binance data" });
+//   }
+// });
 
 // フロントエンドのHTMLを提供
 app.get("/", (req, res) => {
