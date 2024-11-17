@@ -72,6 +72,7 @@
       width: 24px;
       height: auto;
       vertical-align: middle;
+      margin-right: 8px;
     }
     footer {
       text-align: center;
@@ -99,8 +100,8 @@
       <tr>
         <th>Exchange</th>
         <th>Country</th>
-        <th>Price (Local Currency)</th>
-        <th>Price (Local Currency Formatted)</th>
+        <th>Currency</th>
+        <th>Price (Local)</th>
         <th>Price (JPY)</th>
         <th>Price Difference (%)</th>
       </tr>
@@ -125,56 +126,37 @@
       USA: "https://flagcdn.com/w320/us.png"
     };
 
-    // カンマ区切りのフォーマット関数
-    function formatNumber(value, decimals = 4) {
-        // 数値に変換できない場合は "N/A" を返す
-        if (value === "N/A" || isNaN(Number(value))) return "N/A";
-
-        // 数値に変換してから処理
-        const numValue = Number(value);
-        const parts = numValue.toFixed(decimals).split(".");
-        
-        // 整数部分にカンマを追加
-        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        
-        // 小数部分を結合して返す
-        return parts.join(".");
-    }
-
     async function fetchPrices() {
       try {
         const response = await fetch(API_URL);
         const data = await response.json();
 
-        // USD/JPY を目立つように表示
         const usdJpyRateElement = document.getElementById("usd-jpy-rate");
-        usdJpyRateElement.textContent = `USD/JPY: ${formatNumber(data.exchangeRates.USDJPY)}`;
+        usdJpyRateElement.textContent = `USD/JPY: ${data.exchangeRates.USDJPY?.toFixed(4) || "N/A"}`;
 
-        // KRW/JPY, VND/JPY, TWD/JPY を表示
         const otherRatesElement = document.getElementById("other-rates");
         otherRatesElement.textContent = `
-          KRW/JPY: ${formatNumber(data.exchangeRates.KRWJPY)},
-          VND/JPY: ${formatNumber(data.exchangeRates.VNDJPY)},
-          TWD/JPY: ${formatNumber(data.exchangeRates.TWDJPY)}
+          KRW/JPY: ${data.exchangeRates.KRWJPY?.toFixed(4) || "N/A"},
+          VND/JPY: ${data.exchangeRates.VNDJPY?.toFixed(4) || "N/A"},
+          TWD/JPY: ${data.exchangeRates.TWDJPY?.toFixed(4) || "N/A"}
         `;
 
-        // テーブルのデータを更新
         const tableBody = document.getElementById("price-table-body");
         tableBody.innerHTML = "";
 
-        const usdJpyRate = data.exchangeRates.USDJPY || 1; // デフォルト値
+        const usdJpyRate = data.exchangeRates.USDJPY || 1;
 
         data.usdtPrices.forEach((item) => {
-          const priceInJPY = item.priceInJPY || "N/A";
+          const priceInJPY = parseFloat(item.priceInJPY) || "N/A";
           const priceDifference = priceInJPY !== "N/A"
             ? ((priceInJPY - usdJpyRate) / usdJpyRate) * 100
             : 0;
 
           const diffText =
             priceDifference > 0
-              ? `+${formatNumber(priceDifference, 2)}% ↑`
+              ? `+${priceDifference.toFixed(2)}% ↑`
               : priceDifference < 0
-              ? `${formatNumber(priceDifference, 2)}% ↓`
+              ? `${priceDifference.toFixed(2)}% ↓`
               : "-";
           const diffClass = priceDifference > 0 ? "price-diff up" : "price-diff down";
 
@@ -183,12 +165,10 @@
           const row = `
             <tr>
               <td>${item.exchange}</td>
-              <td>
-                <img src="${countryFlag}" alt="${item.country}" class="flag">
-              </td>
-              <td>${item.localPrice}</td>
-              <td>${item.localPrice ? formatNumber(item.localPrice) : "N/A"}</td>
-              <td>${priceInJPY !== "N/A" ? formatNumber(priceInJPY) : "N/A"}</td>
+              <td><img src="${countryFlag}" alt="${item.country}" class="flag"></td>
+              <td>${item.currency}</td>
+              <td>${item.localPrice || "N/A"}</td>
+              <td>${priceInJPY !== "N/A" ? priceInJPY.toFixed(4) : "N/A"}</td>
               <td><span class="${priceInJPY !== "N/A" ? diffClass : ""}">${diffText}</span></td>
             </tr>
           `;
@@ -199,7 +179,7 @@
       }
     }
 
-    setInterval(fetchPrices, 5000); // 5秒ごとに更新
+    setInterval(fetchPrices, 5000);
     fetchPrices();
   </script>
 </body>
