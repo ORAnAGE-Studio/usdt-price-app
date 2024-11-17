@@ -124,6 +124,14 @@
       USA: "https://flagcdn.com/w320/us.png"
     };
 
+    // カンマ区切りのフォーマット関数
+    function formatNumber(value, decimals = 4) {
+      if (value === "N/A" || isNaN(value)) return "N/A";
+      const parts = Number(value).toFixed(decimals).split(".");
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return parts.join(".");
+    }
+
     async function fetchPrices() {
       try {
         const response = await fetch(API_URL);
@@ -131,16 +139,14 @@
 
         // USD/JPY を目立つように表示
         const usdJpyRateElement = document.getElementById("usd-jpy-rate");
-        usdJpyRateElement.textContent = `USD/JPY: ${
-          data.exchangeRates.USDJPY?.toFixed(4).toLocaleString() || "N/A"
-        }`;
+        usdJpyRateElement.textContent = `USD/JPY: ${formatNumber(data.exchangeRates.USDJPY)}`;
 
         // KRW/JPY, VND/JPY, TWD/JPY を表示
         const otherRatesElement = document.getElementById("other-rates");
         otherRatesElement.textContent = `
-          KRW/JPY: ${data.exchangeRates.KRWJPY?.toFixed(4).toLocaleString() || "N/A"},
-          VND/JPY: ${data.exchangeRates.VNDJPY?.toFixed(4).toLocaleString() || "N/A"},
-          TWD/JPY: ${data.exchangeRates.TWDJPY?.toFixed(4).toLocaleString() || "N/A"}
+          KRW/JPY: ${formatNumber(data.exchangeRates.KRWJPY)},
+          VND/JPY: ${formatNumber(data.exchangeRates.VNDJPY)},
+          TWD/JPY: ${formatNumber(data.exchangeRates.TWDJPY)}
         `;
 
         // テーブルのデータを更新
@@ -150,16 +156,16 @@
         const usdJpyRate = data.exchangeRates.USDJPY || 1; // デフォルト値
 
         data.usdtPrices.forEach((item) => {
-          const priceInJPY = parseFloat(item.priceInJPY) || "N/A";
+          const priceInJPY = item.priceInJPY || "N/A";
           const priceDifference = priceInJPY !== "N/A"
             ? ((priceInJPY - usdJpyRate) / usdJpyRate) * 100
             : 0;
 
           const diffText =
             priceDifference > 0
-              ? `+${priceDifference.toFixed(2)}% ↑`
+              ? `+${formatNumber(priceDifference, 2)}% ↑`
               : priceDifference < 0
-              ? `${priceDifference.toFixed(2)}% ↓`
+              ? `${formatNumber(priceDifference, 2)}% ↓`
               : "-";
           const diffClass = priceDifference > 0 ? "price-diff up" : "price-diff down";
 
@@ -171,8 +177,8 @@
               <td>
                 <img src="${countryFlag}" alt="${item.country}" class="flag">
               </td>
-              <td>${item.localPrice ? Number(item.localPrice).toFixed(4).toLocaleString() : "N/A"}</td>
-              <td>${priceInJPY !== "N/A" ? Number(priceInJPY).toFixed(4).toLocaleString() : "N/A"}</td>
+              <td>${item.localPrice ? formatNumber(item.localPrice) : "N/A"}</td>
+              <td>${priceInJPY !== "N/A" ? formatNumber(priceInJPY) : "N/A"}</td>
               <td><span class="${priceInJPY !== "N/A" ? diffClass : ""}">${diffText}</span></td>
             </tr>
           `;
