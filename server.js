@@ -195,18 +195,18 @@ app.get("/api/prices", async (req, res) => {
 });
 
 // Binance APIプロキシ
-const BINANCE_API_URL = "https://api.binance.com/api/v3/ticker/price?symbol=USDTUSDT";
+const BINANCE_API_URL = "https://api.binance.com/api/v3/ticker/price?symbol=USDTBVND";
 
 app.get("/api/binance", async (req, res) => {
   try {
     const response = await fetch(BINANCE_API_URL);
     if (!response.ok) {
-      throw new Error(`Binance API Error: ${response.status}`);
+      throw new Error(`Binance API Error: ${response.status} ${response.statusText}`);
     }
     const data = await response.json();
     res.json(data);
   } catch (error) {
-    console.error("Error fetching Binance data:", error.message);
+    console.error("Error fetching Binance data:", error.message, error.stack);
     res.status(500).json({ error: "Failed to fetch Binance data" });
   }
 });
