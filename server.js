@@ -82,20 +82,20 @@ const exchanges = [
     api: "https://api.binance.com/api/v3/ticker/price?symbol=USDTBVND",
     parseResponse: (data) => parseFloat(data.price),
   },
-  {
-    name: "BitcoinVN",
-    country: "Vietnam",
-    currency: "VND",
-    api: "https://bitcoinvn.io/api/v1/ticker",
-    parseResponse: (data) => parseFloat(data.USDT.last), // 仮定
-  },
-  {
-    name: "Mtobit",
-    country: "Vietnam",
-    currency: "VND",
-    api: "https://api.mtobit.com/market/ticker?symbol=USDT",
-    parseResponse: (data) => parseFloat(data.ticker.last), // 仮定
-  },
+  // {
+  //   name: "BitcoinVN",
+  //   country: "Vietnam",
+  //   currency: "VND",
+  //   api: "https://bitcoinvn.io/api/v1/ticker",
+  //   parseResponse: (data) => parseFloat(data.USDT.last), // 仮定
+  // },
+  // {
+  //   name: "Mtobit",
+  //   country: "Vietnam",
+  //   currency: "VND",
+  //   api: "https://api.mtobit.com/market/ticker?symbol=USDT",
+  //   parseResponse: (data) => parseFloat(data.ticker.last), // 仮定
+  // },
 ];
 
 // Yahoo Financeから個別に為替レートを取得
@@ -191,23 +191,6 @@ app.get("/api/prices", async (req, res) => {
   } catch (error) {
     console.error("Error fetching data:", error.message);
     res.status(500).json({ error: "Failed to fetch data" });
-  }
-});
-
-// Binance APIプロキシ
-const BINANCE_API_URL = "https://api.binance.com/api/v3/ticker/price?symbol=USDTBVND";
-
-app.get("/api/binance", async (req, res) => {
-  try {
-    const response = await fetch(BINANCE_API_URL);
-    if (!response.ok) {
-      throw new Error(`Binance API Error: ${response.status} ${response.statusText}`);
-    }
-    const data = await response.json();
-    res.json(data);
-  } catch (error) {
-    console.error("Error fetching Binance data:", error.message, error.stack);
-    res.status(500).json({ error: "Failed to fetch Binance data" });
   }
 });
 
