@@ -1,14 +1,42 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-
-// 修正: fetch のインポート
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 const app = express();
 const PORT = 3000;
 
-app.use(cors());
+// CORS設定
+const allowedOrigins = [
+  "https://usdt-price-app-web.vercel.app", // 本番環境
+  "http://localhost:3000", // ローカル開発環境
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true); // 許可するリクエスト
+    } else {
+      callback(new Error("Not allowed by CORS")); // 許可しないリクエスト
+    }
+  },
+  methods: ["GET", "POST"], // 許可するHTTPメソッド
+  allowedHeaders: ["Content-Type", "Authorization"], // 許可するカスタムヘッダー
+}));
+
+// 強制HTTPSリダイレクト（本番環境用）
+app.use((req, res, next) => {
+  if (process.env.NODE_ENV === "production" && req.headers["x-forwarded-proto"] !== "https") {
+    return res.redirect(`https://${req.headers.host}${req.url}`);
+  }
+  next();
+});
+
+// キャッシュ無効化
+app.use((req, res, next) => {
+  res.set('Cache-Control', 'no-store'); // キャッシュを無効化
+  next();
+});
 
 // 全取引所リスト
 const exchanges = [
