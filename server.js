@@ -52,7 +52,7 @@ const exchanges = [
     country: "Vietnam",
     currency: "VND",
     api: "https://api.binance.com/api/v3/ticker/price?symbol=USDTBVND",
-    parseResponse: (data) => parseFloat(data.price), // Binance APIの価格
+    parseResponse: (data) => parseFloat(data.price),
   },
   {
     name: "BitcoinVN",
