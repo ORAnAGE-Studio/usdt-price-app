@@ -31,17 +31,23 @@
       color: #bdbdbd;
       margin-top: 5px;
     }
+    .table-container {
+      width: 100%;
+      overflow-x: auto; /* Allows horizontal scrolling on small screens */
+      padding: 0 10px;
+    }
     table {
-      width: 90%;
-      margin: 20px auto;
+      width: 100%;
+      table-layout: fixed; /* Ensures the table columns maintain uniform widths */
       border-collapse: collapse;
       background-color: #1e1e1e;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
     th, td {
-      padding: 15px;
+      padding: 10px; /* Reduced padding for smaller screens */
       text-align: center;
       border: 1px solid #333;
+      word-wrap: break-word; /* Ensures text wraps within cells */
     }
     th {
       background-color: #282828;
@@ -69,10 +75,11 @@
       background-color: #101533;
     }
     .flag {
-      width: 24px;
+      width: 20px; /* Small enough for mobile screens */
       height: auto;
       vertical-align: middle;
-      margin-right: 8px;
+      display: block;
+      margin: 0 auto;
     }
     footer {
       text-align: center;
@@ -87,6 +94,22 @@
     footer a:hover {
       text-decoration: underline;
     }
+
+    /* Media Query for Smaller Screens */
+    @media (max-width: 768px) {
+      .usd-jpy {
+        font-size: 1.5rem;
+      }
+      .other-rates {
+        font-size: 1rem;
+      }
+      th, td {
+        padding: 8px;
+      }
+      .flag {
+        width: 16px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -95,28 +118,29 @@
     <span id="usd-jpy-rate" class="usd-jpy"></span>
     <span id="other-rates" class="other-rates"></span>
   </h1>
-  <table>
-    <thead>
-      <tr>
-        <th>Exchange</th>
-        <th>Country</th>
-        <th>Price (Local)</th>
-        <th>Price (JPY)</th>
-        <th>Price Difference (%)</th>
-      </tr>
-    </thead>
-    <tbody id="price-table-body">
-      <!-- Dynamic content -->
-    </tbody>
-  </table>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Exchange</th>
+          <th>Country</th>
+          <th>Price (Local)</th>
+          <th>Price (JPY)</th>
+          <th>Price Difference (%)</th>
+        </tr>
+      </thead>
+      <tbody id="price-table-body">
+        <!-- Dynamic content -->
+      </tbody>
+    </table>
+  </div>
   <footer>
     <p>Powered by <a href="" target="_blank">ORAnAGE Studio</a>. All rights reserved.</p>
   </footer>
   <script>
     const API_URL = window.location.origin.includes("localhost")
       ? "http://localhost:3000/api/prices" // ローカル環境
-    //   : "https://usdt-price-app-web.vercel.app/api/prices"; // 本番環境
-      : "https://usdt-price-app.oranage.tokyo/api/prices"; // 本番環境
+      : "https://usdt-price-app-web.vercel.app/api/prices"; // 本番環境
 
     const countryFlags = {
       Vietnam: "https://flagcdn.com/w320/vn.png",
