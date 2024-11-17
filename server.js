@@ -9,7 +9,7 @@ const PORT = 3000;
 // CORS設定
 const allowedOrigins = [
   "https://usdt-price-app-web.vercel.app", // 本番環境
-  "https://apps.oranage.tokyo/",  // 本番環境
+  "https://usdt-price-app.oranage.tokyo/",  // 本番環境
   "http://localhost:3000", // ローカル開発環境
 ];
 
