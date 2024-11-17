@@ -152,8 +152,8 @@ async function getUSDTPrices(exchangeRates) {
         exchange: exchange.name,
         country: exchange.country,
         currency: exchange.currency,
-        localPrice: priceInLocalCurrency.toFixed(4),
-        priceInJPY: priceInJPY.toFixed(4),
+        localPrice: priceInLocalCurrency,
+        priceInJPY: priceInJPY,
       });
     } catch (error) {
       console.error(`Error fetching data from ${exchange.name}:`, error.message);

@@ -126,21 +126,32 @@
       USA: "https://flagcdn.com/w320/us.png"
     };
 
+    // カンマ区切りフォーマット関数
+    function formatNumber(value, decimals = 4) {
+      if (value === "N/A" || isNaN(value)) return "N/A";
+      const parts = Number(value).toFixed(decimals).split(".");
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      return parts.join(".");
+    }
+
     async function fetchPrices() {
       try {
         const response = await fetch(API_URL);
         const data = await response.json();
 
+        // USD/JPY を目立つように表示
         const usdJpyRateElement = document.getElementById("usd-jpy-rate");
-        usdJpyRateElement.textContent = `USD/JPY: ${data.exchangeRates.USDJPY?.toFixed(4) || "N/A"}`;
+        usdJpyRateElement.textContent = `USD/JPY: ${formatNumber(data.exchangeRates.USDJPY)}`;
 
+        // KRW/JPY, VND/JPY を通常のフォントで表示
         const otherRatesElement = document.getElementById("other-rates");
         otherRatesElement.textContent = `
-          KRW/JPY: ${data.exchangeRates.KRWJPY?.toFixed(4) || "N/A"},
-          VND/JPY: ${data.exchangeRates.VNDJPY?.toFixed(4) || "N/A"},
-          TWD/JPY: ${data.exchangeRates.TWDJPY?.toFixed(4) || "N/A"}
+          KRW/JPY: ${formatNumber(data.exchangeRates.KRWJPY)},
+          VND/JPY: ${formatNumber(data.exchangeRates.VNDJPY)},
+          TWD/JPY: ${formatNumber(data.exchangeRates.TWDJPY)}
         `;
 
+        // USDT価格をテーブルに表示
         const tableBody = document.getElementById("price-table-body");
         tableBody.innerHTML = "";
 
@@ -154,9 +165,9 @@
 
           const diffText =
             priceDifference > 0
-              ? `+${priceDifference.toFixed(2)}% ↑`
+              ? `+${formatNumber(priceDifference, 2)}% ↑`
               : priceDifference < 0
-              ? `${priceDifference.toFixed(2)}% ↓`
+              ? `${formatNumber(priceDifference, 2)}% ↓`
               : "-";
           const diffClass = priceDifference > 0 ? "price-diff up" : "price-diff down";
 
@@ -167,8 +178,8 @@
               <td>${item.exchange}</td>
               <td><img src="${countryFlag}" alt="${item.country}" class="flag"></td>
               <td>${item.currency}</td>
-              <td>${item.localPrice !== "N/A" ? item.localPrice.toFixed(4) : "N/A"}</td>
-              <td>${priceInJPY !== "N/A" ? priceInJPY.toFixed(4) : "N/A"}</td>
+              <td>${formatNumber(item.localPrice)}</td>
+              <td>${formatNumber(priceInJPY)}</td>
               <td><span class="${priceInJPY !== "N/A" ? diffClass : ""}">${diffText}</span></td>
             </tr>
           `;
