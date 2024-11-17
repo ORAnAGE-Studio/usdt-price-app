@@ -100,7 +100,7 @@
       <tr>
         <th>Exchange</th>
         <th>Country</th>
-        <th>Currency</th>
+        <!-- <th>Currency</th> -->
         <th>Price (Local)</th>
         <th>Price (JPY)</th>
         <th>Price Difference (%)</th>
@@ -178,7 +178,7 @@
             <tr>
               <td>${item.exchange}</td>
               <td><img src="${countryFlag}" alt="${item.country}" class="flag"></td>
-              <td>${item.currency}</td>
+            //   <td>${item.currency}</td>
               <td>${formatNumber(item.localPrice)}</td>
               <td>${formatNumber(priceInJPY)}</td>
               <td><span class="${priceInJPY !== "N/A" ? diffClass : ""}">${diffText}</span></td>
