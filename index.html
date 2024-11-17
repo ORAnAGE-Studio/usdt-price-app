@@ -167,7 +167,7 @@
               <td>${item.exchange}</td>
               <td><img src="${countryFlag}" alt="${item.country}" class="flag"></td>
               <td>${item.currency}</td>
-              <td>${item.localPrice || "N/A"}</td>
+              <td>${item.localPrice !== "N/A" ? item.localPrice.toFixed(4) : "N/A"}</td>
               <td>${priceInJPY !== "N/A" ? priceInJPY.toFixed(4) : "N/A"}</td>
               <td><span class="${priceInJPY !== "N/A" ? diffClass : ""}">${diffText}</span></td>
             </tr>
