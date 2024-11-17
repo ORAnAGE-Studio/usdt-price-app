@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+　<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -33,21 +33,21 @@
     }
     .table-container {
       width: 100%;
-      overflow-x: auto; /* Allows horizontal scrolling on small screens */
+      overflow-x: auto; /* Allows horizontal scrolling if needed */
       padding: 0 10px;
     }
     table {
       width: 100%;
-      table-layout: fixed; /* Ensures the table columns maintain uniform widths */
+      table-layout: fixed; /* Ensures uniform column widths */
       border-collapse: collapse;
       background-color: #1e1e1e;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
     th, td {
-      padding: 10px; /* Reduced padding for smaller screens */
+      padding: 10px;
       text-align: center;
       border: 1px solid #333;
-      word-wrap: break-word; /* Ensures text wraps within cells */
+      word-wrap: break-word; /* Handles long text */
     }
     th {
       background-color: #282828;
@@ -75,11 +75,9 @@
       background-color: #101533;
     }
     .flag {
-      width: 20px; /* Small enough for mobile screens */
+      width: 24px;
       height: auto;
-      vertical-align: middle;
-      display: block;
-      margin: 0 auto;
+      display: inline-block;
     }
     footer {
       text-align: center;
@@ -105,9 +103,10 @@
       }
       th, td {
         padding: 8px;
+        font-size: 0.8rem; /* Smaller font size for headers */
       }
       .flag {
-        width: 16px;
+        width: 20px; /* Adjust the flag size */
       }
     }
   </style>
@@ -140,7 +139,8 @@
   <script>
     const API_URL = window.location.origin.includes("localhost")
       ? "http://localhost:3000/api/prices" // ローカル環境
-      : "https://usdt-price-app-web.vercel.app/api/prices"; // 本番環境
+    //   : "https://usdt-price-app-web.vercel.app/api/prices"; // 本番環境
+      : "https://usdt-price-app.oranage.tokyo/api/prices"; // 本番環境
 
     const countryFlags = {
       Vietnam: "https://flagcdn.com/w320/vn.png",
