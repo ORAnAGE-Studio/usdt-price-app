@@ -68,6 +68,12 @@
       color: #448aff;
       background-color: #101533;
     }
+    .flag {
+      width: 24px;
+      height: auto;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
     footer {
       text-align: center;
       margin-top: 20px;
@@ -111,6 +117,15 @@
       ? "http://localhost:3000/api/prices" // ローカル環境
       : "https://usdt-price-app-web.vercel.app/api/prices"; // 本番環境
 
+    // 国と国旗の対応表
+    const countryFlags = {
+      Vietnam: "https://flagcdn.com/w320/vn.png",
+      Taiwan: "https://flagcdn.com/w320/tw.png",
+      Japan: "https://flagcdn.com/w320/jp.png",
+      Korea: "https://flagcdn.com/w320/kr.png",
+      USA: "https://flagcdn.com/w320/us.png"
+    };
+
     async function fetchPrices() {
       try {
         const response = await fetch(API_URL);
@@ -148,15 +163,21 @@
               : "-";
           const diffClass = priceDifference > 0 ? "price-diff up" : "price-diff down";
 
-          tableBody.innerHTML += `
+          const countryFlag = countryFlags[item.country] || "";
+
+          const row = `
             <tr>
               <td>${item.exchange}</td>
-              <td>${item.country}</td>
+              <td>
+                <img src="${countryFlag}" alt="${item.country}" class="flag">
+                ${item.country}
+              </td>
               <td>${item.localPrice}</td>
               <td>${priceInJPY}</td>
               <td><span class="${priceInJPY !== "N/A" ? diffClass : ""}">${diffText}</span></td>
             </tr>
           `;
+          tableBody.innerHTML += row;
         });
       } catch (error) {
         console.error("Error fetching prices:", error);
