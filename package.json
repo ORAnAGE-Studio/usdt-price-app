@@ -1,0 +1,30 @@
+{
+  "name": "usdt-price-app",
+  "version": "1.0.0",
+  "description": "An application to fetch and display USDT prices in JPY with exchange rate comparisons",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "usdt",
+    "crypto",
+    "prices",
+    "exchange-rates",
+    "api"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}

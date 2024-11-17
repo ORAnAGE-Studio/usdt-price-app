@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>USDT Price in JPY</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+    .usd-jpy {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
+    .other-rates {
+      font-size: 16px;
+      color: #555;
+    }
+    .price-diff {
+      font-size: 14px;
+    }
+    .price-diff.up {
+      color: red;
+      font-weight: bold;
+    }
+    .price-diff.down {
+      color: blue;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>
+    USDT Price in JPY 
+    <span id="usd-jpy-rate" class="usd-jpy"></span>
+    <span id="other-rates" class="other-rates"></span>
+  </h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Exchange</th>
+        <th>Country</th>
+        <th>Price (Local Currency)</th>
+        <th>Price (JPY)</th>
+        <th>Price Difference (%)</th>
+      </tr>
+    </thead>
+    <tbody id="price-table-body">
+    </tbody>
+  </table>
+  <script>
+    async function fetchPrices() {
+      try {
+        const response = await fetch("http://localhost:3000/api/prices");
+        const data = await response.json();
+
+        // USD/JPY を目立つように表示
+        const usdJpyRateElement = document.getElementById("usd-jpy-rate");
+        usdJpyRateElement.textContent = `USD/JPY: ${data.exchangeRates.USDJPY?.toFixed(4) || "N/A"}`;
+
+        // KRW/JPY, VND/JPY を通常のフォントで表示
+        const otherRatesElement = document.getElementById("other-rates");
+        otherRatesElement.textContent = `
+          KRW/JPY: ${data.exchangeRates.KRWJPY?.toFixed(4) || "N/A"},
+          VND/JPY: ${data.exchangeRates.VNDJPY?.toFixed(4) || "N/A"},
+          TWD/JPY: ${data.exchangeRates.TWDJPY?.toFixed(4) || "N/A"}
+        `;
+
+        // USDT価格をテーブルに表示
+        const tableBody = document.getElementById("price-table-body");
+        tableBody.innerHTML = "";
+
+        const usdJpyRate = data.exchangeRates.USDJPY || 1; // デフォルト値
+
+        data.usdtPrices.forEach((item) => {
+          if (item.priceInJPY === "N/A") {
+            tableBody.innerHTML += `
+              <tr>
+                <td>${item.exchange}</td>
+                <td>${item.country}</td>
+                <td>${item.localPrice}</td>
+                <td>${item.priceInJPY}</td>
+                <td>-</td>
+              </tr>
+            `;
+            return;
+          }
+
+          const priceInJPY = parseFloat(item.priceInJPY);
+          const priceDifference = ((priceInJPY - usdJpyRate) / usdJpyRate) * 100;
+
+          let diffText = "-";
+          let diffClass = "";
+          if (priceDifference > 0) {
+            diffText = `+${priceDifference.toFixed(2)}% ↑`;
+            diffClass = "price-diff up";
+          } else if (priceDifference < 0) {
+            diffText = `${priceDifference.toFixed(2)}% ↓`;
+            diffClass = "price-diff down";
+          }
+
+          const row = `
+            <tr>
+              <td>${item.exchange}</td>
+              <td>${item.country}</td>
+              <td>${item.localPrice}</td>
+              <td>${item.priceInJPY}</td>
+              <td><span class="${diffClass}">${diffText}</span></td>
+            </tr>
+          `;
+          tableBody.innerHTML += row;
+        });
+      } catch (error) {
+        console.error("Error fetching prices:", error);
+      }
+    }
+
+    // 初回ロード時と5秒ごとの更新
+    setInterval(fetchPrices, 5000);
+    fetchPrices();
+  </script>
+</body>
+</html>
