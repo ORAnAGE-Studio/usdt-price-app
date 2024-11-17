@@ -194,6 +194,23 @@ app.get("/api/prices", async (req, res) => {
   }
 });
 
+// Binance APIプロキシ
+const BINANCE_API_URL = "https://api.binance.com/api/v3/ticker/price?symbol=USDTUSDT";
+
+app.get("/api/binance", async (req, res) => {
+  try {
+    const response = await fetch(BINANCE_API_URL);
+    if (!response.ok) {
+      throw new Error(`Binance API Error: ${response.status}`);
+    }
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error("Error fetching Binance data:", error.message);
+    res.status(500).json({ error: "Failed to fetch Binance data" });
+  }
+});
+
 // フロントエンドのHTMLを提供
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));

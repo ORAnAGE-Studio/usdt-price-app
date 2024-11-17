@@ -44,6 +44,7 @@
     <span id="usd-jpy-rate" class="usd-jpy"></span>
     <span id="other-rates" class="other-rates"></span>
   </h1>
+  <div id="binance-price" style="margin-bottom: 20px;"></div>
   <table>
     <thead>
       <tr>
@@ -62,8 +63,21 @@
       ? "http://localhost:3000/api/prices" // ローカル環境
       : "https://usdt-price-app-web.vercel.app/api/prices"; // 本番環境
 
+    const BINANCE_API_URL = window.location.origin.includes("localhost")
+      ? "http://localhost:3000/api/binance" // ローカル環境
+      : "https://usdt-price-app-web.vercel.app/api/binance"; // 本番環境
+
     async function fetchPrices() {
       try {
+        // Binance APIデータ取得
+        const binanceResponse = await fetch(BINANCE_API_URL);
+        const binanceData = await binanceResponse.json();
+
+        // Binanceの価格を表示
+        const binanceElement = document.getElementById("binance-price");
+        binanceElement.textContent = `Binance Price: ${binanceData.price || "N/A"}`;
+
+        // 他のエンドポイントデータ取得
         const response = await fetch(API_URL);
         const data = await response.json();
 
