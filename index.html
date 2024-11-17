@@ -4,43 +4,88 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>USDT Price in JPY</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    table {
-      width: 100%;
-      border-collapse: collapse;
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #121212;
+      color: #ffffff;
     }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-    }
-    th {
-      background-color: #f4f4f4;
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+      color: #00e676;
     }
     .usd-jpy {
-      font-size: 24px;
+      display: block;
+      font-size: 1.8rem;
       font-weight: bold;
-      color: #333;
+      color: #00e676;
+      margin-top: 10px;
     }
     .other-rates {
-      font-size: 16px;
-      color: #555;
+      display: block;
+      font-size: 1.2rem;
+      color: #bdbdbd;
+      margin-top: 5px;
+    }
+    table {
+      width: 90%;
+      margin: 20px auto;
+      border-collapse: collapse;
+      background-color: #1e1e1e;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    th, td {
+      padding: 15px;
+      text-align: center;
+      border: 1px solid #333;
+    }
+    th {
+      background-color: #282828;
+      color: #ffffff;
+      font-weight: bold;
+    }
+    td {
+      color: #e0e0e0;
+    }
+    tr:hover {
+      background-color: #333333;
     }
     .price-diff {
-      font-size: 14px;
+      font-size: 1rem;
+      padding: 5px;
+      border-radius: 5px;
+      display: inline-block;
     }
     .price-diff.up {
-      color: red;
-      font-weight: bold;
+      color: #ff5252;
+      background-color: #331010;
     }
     .price-diff.down {
-      color: blue;
-      font-weight: bold;
+      color: #448aff;
+      background-color: #101533;
+    }
+    footer {
+      text-align: center;
+      margin-top: 20px;
+      color: #bdbdbd;
+      font-size: 0.9rem;
+    }
+    footer a {
+      color: #00e676;
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
   <h1>
-    USDT Price in JPY 
+    USDT Price in JPY
     <span id="usd-jpy-rate" class="usd-jpy"></span>
     <span id="other-rates" class="other-rates"></span>
   </h1>
@@ -55,8 +100,12 @@
       </tr>
     </thead>
     <tbody id="price-table-body">
+      <!-- Dynamic content -->
     </tbody>
   </table>
+  <footer>
+    <p>Powered by <a href="https://thxnet.org/" target="_blank">THXNET</a>. All rights reserved.</p>
+  </footer>
   <script>
     const API_URL = window.location.origin.includes("localhost")
       ? "http://localhost:3000/api/prices" // ローカル環境
@@ -86,50 +135,35 @@
         const usdJpyRate = data.exchangeRates.USDJPY || 1; // デフォルト値
 
         data.usdtPrices.forEach((item) => {
-          if (item.priceInJPY === "N/A") {
-            tableBody.innerHTML += `
-              <tr>
-                <td>${item.exchange}</td>
-                <td>${item.country}</td>
-                <td>${item.localPrice}</td>
-                <td>${item.priceInJPY}</td>
-                <td>-</td>
-              </tr>
-            `;
-            return;
-          }
+          const priceInJPY = parseFloat(item.priceInJPY) || "N/A";
+          const priceDifference = priceInJPY !== "N/A"
+            ? ((priceInJPY - usdJpyRate) / usdJpyRate) * 100
+            : 0;
 
-          const priceInJPY = parseFloat(item.priceInJPY);
-          const priceDifference = ((priceInJPY - usdJpyRate) / usdJpyRate) * 100;
+          const diffText =
+            priceDifference > 0
+              ? `+${priceDifference.toFixed(2)}% ↑`
+              : priceDifference < 0
+              ? `${priceDifference.toFixed(2)}% ↓`
+              : "-";
+          const diffClass = priceDifference > 0 ? "price-diff up" : "price-diff down";
 
-          let diffText = "-";
-          let diffClass = "";
-          if (priceDifference > 0) {
-            diffText = `+${priceDifference.toFixed(2)}% ↑`;
-            diffClass = "price-diff up";
-          } else if (priceDifference < 0) {
-            diffText = `${priceDifference.toFixed(2)}% ↓`;
-            diffClass = "price-diff down";
-          }
-
-          const row = `
+          tableBody.innerHTML += `
             <tr>
               <td>${item.exchange}</td>
               <td>${item.country}</td>
               <td>${item.localPrice}</td>
-              <td>${item.priceInJPY}</td>
-              <td><span class="${diffClass}">${diffText}</span></td>
+              <td>${priceInJPY}</td>
+              <td><span class="${priceInJPY !== "N/A" ? diffClass : ""}">${diffText}</span></td>
             </tr>
           `;
-          tableBody.innerHTML += row;
         });
       } catch (error) {
         console.error("Error fetching prices:", error);
       }
     }
 
-    // 初回ロード時と5秒ごとの更新
-    setInterval(fetchPrices, 5000);
+    setInterval(fetchPrices, 5000); // 5秒ごとに更新
     fetchPrices();
   </script>
 </body>
