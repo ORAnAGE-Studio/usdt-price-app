@@ -235,9 +235,9 @@
         sortedPrices.forEach((item) => {
           const diffText =
             item.priceDifference > 0
-              ? `+${formatNumber(item.priceDifference, 2)}% ↑`
+              ? `+${formatNumber(item.priceDifference, 2)}% `
               : item.priceDifference < 0
-              ? `${formatNumber(item.priceDifference, 2)}% ↓`
+              ? `${formatNumber(item.priceDifference, 2)}% `
               : "-";
           const diffClass = item.priceDifference > 0 ? "price-diff up" : "price-diff down";
 
@@ -263,7 +263,7 @@
             <td>${formatNumber(top.priceInJPY - usdJpyRate)}</td>
             <td>
             <span class="${top.priceDifference > 0 ? 'price-diff up' : 'price-diff down'}">
-                ${top.priceDifference > 0 ? '+' : ''}${formatNumber(top.priceDifference, 2)}% ${top.priceDifference > 0 ? '↑' : '↓'}
+                ${top.priceDifference > 0 ? '+' : ''}${formatNumber(top.priceDifference, 2)}% 
             </span>
             </td>
         </tr>
@@ -274,7 +274,7 @@
             <td>${formatNumber(bottom.priceInJPY - usdJpyRate)}</td>
             <td>
             <span class="${bottom.priceDifference > 0 ? 'price-diff up' : 'price-diff down'}">
-                ${bottom.priceDifference > 0 ? '+' : ''}${formatNumber(bottom.priceDifference, 2)}% ${bottom.priceDifference > 0 ? '↑' : '↓'}
+                ${bottom.priceDifference > 0 ? '+' : ''}${formatNumber(bottom.priceDifference, 2)}% 
             </span>
             </td>
         </tr>`;
