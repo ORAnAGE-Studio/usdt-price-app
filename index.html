@@ -1,4 +1,4 @@
-　<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -66,26 +66,26 @@
       border-radius: 5px;
       display: inline-block;
     }
-    /* .price-diff.up {
-      color: #ff5252;
-      background-color: #331010;
-    }
-    .price-diff.down {
-      color: #448aff;
-      background-color: #101533;
-    } */
     .price-diff.up {
-        color: #4caf50; /* Green text */
-        background-color: #143d24; /* Dark green background */
+      color: #4caf50; /* Green text */
+      background-color: #143d24; /* Dark green background */
     }
     .price-diff.down {
-        color: #ff5252;
+      color: #ff5252;
       background-color: #331010;
     }
     .flag {
       width: 24px;
       height: auto;
       display: inline-block;
+    }
+    .highlight-spread {
+        font-weight: bold;
+        color: #ffeb3b; /* Yellow text */
+        background-color: #333333; /* Dark gray background */
+        padding: 10px;
+        border-radius: 5px;
+        text-align: center;
     }
     footer {
       text-align: center;
@@ -121,11 +121,12 @@
 </head>
 <body>
   <h1>
-    USDT Price in JPY
     <span id="usd-jpy-rate" class="usd-jpy"></span>
     <span id="other-rates" class="other-rates"></span>
   </h1>
   <div class="table-container">
+    <!-- Main Table -->
+    <h2>USDT Price</h2>
     <table>
       <thead>
         <tr>
@@ -133,10 +134,44 @@
           <th>Country</th>
           <th>Price (Local)</th>
           <th>Price (JPY)</th>
-          <th>Price Difference (%)</th>
+          <th>Price Diff (%)</th>
         </tr>
       </thead>
       <tbody id="price-table-body">
+        <!-- Dynamic content -->
+      </tbody>
+    </table>
+    <!-- Top-Bottom Table -->
+    <h2>Top-Bottom</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Exchange</th>
+          <th>Country</th>
+          <th>Price (JPY)</th>
+          <th>Spread</th>
+          <th>Price Diff (%)</th>
+        </tr>
+      </thead>
+      <tbody id="top-bottom-body">
+        <!-- Dynamic content -->
+      </tbody>
+    </table>
+    <!-- MAX Spread Table -->
+    <h2>MAX Spread</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Exchange</th>
+          <th>Country</th>
+          <th>Price T (JPY)</th>
+          <th>Spread</th>
+          <th>Price B (JPY)</th>
+          <th>Country　</th>
+          <th>Exchange </th>
+        </tr>
+      </thead>
+      <tbody id="max-range-body">
         <!-- Dynamic content -->
       </tbody>
     </table>
@@ -185,21 +220,18 @@
           TWD/JPY: ${formatNumber(data.exchangeRates.TWDJPY)}
         `;
 
-        // Calculate and sort prices by price difference
         const sortedPrices = data.usdtPrices.map((item) => {
           const priceInJPY = parseFloat(item.priceInJPY) || "N/A";
           const priceDifference =
             priceInJPY !== "N/A" ? ((priceInJPY - usdJpyRate) / usdJpyRate) * 100 : null;
-          return {
-            ...item,
-            priceDifference,
-          };
+          return { ...item, priceDifference };
         }).sort((a, b) => (b.priceDifference || 0) - (a.priceDifference || 0));
 
-        // USDT価格をテーブルに表示
         const tableBody = document.getElementById("price-table-body");
-        tableBody.innerHTML = "";
+        const topBottomBody = document.getElementById("top-bottom-body");
+        const maxRangeBody = document.getElementById("max-range-body");
 
+        tableBody.innerHTML = "";
         sortedPrices.forEach((item) => {
           const diffText =
             item.priceDifference > 0
@@ -209,17 +241,56 @@
               : "-";
           const diffClass = item.priceDifference > 0 ? "price-diff up" : "price-diff down";
 
-          const row = `
+          tableBody.innerHTML += `
             <tr>
               <td>${item.exchange}</td>
               <td><img src="${countryFlags[item.country]}" alt="${item.country}" class="flag"></td>
               <td>${formatNumber(item.localPrice)}</td>
               <td>${formatNumber(item.priceInJPY)}</td>
               <td><span class="${item.priceDifference !== null ? diffClass : ""}">${diffText}</span></td>
-            </tr>
-          `;
-          tableBody.innerHTML += row;
+            </tr>`;
         });
+
+        // Top-Bottom テーブルの更新ロジック
+        const top = sortedPrices[0]; // 最大価格差
+        const bottom = sortedPrices[sortedPrices.length - 1]; // 最小価格差
+
+        topBottomBody.innerHTML = `
+        <tr>
+            <td>${top.exchange}</td>
+            <td><img src="${countryFlags[top.country]}" alt="${top.country}" class="flag"></td>
+            <td>${formatNumber(top.priceInJPY)}</td>
+            <td>${formatNumber(top.priceInJPY - usdJpyRate)}</td>
+            <td>
+            <span class="${top.priceDifference > 0 ? 'price-diff up' : 'price-diff down'}">
+                ${top.priceDifference > 0 ? '+' : ''}${formatNumber(top.priceDifference, 2)}% ${top.priceDifference > 0 ? '↑' : '↓'}
+            </span>
+            </td>
+        </tr>
+        <tr>
+            <td>${bottom.exchange}</td>
+            <td><img src="${countryFlags[bottom.country]}" alt="${bottom.country}" class="flag"></td>
+            <td>${formatNumber(bottom.priceInJPY)}</td>
+            <td>${formatNumber(bottom.priceInJPY - usdJpyRate)}</td>
+            <td>
+            <span class="${bottom.priceDifference > 0 ? 'price-diff up' : 'price-diff down'}">
+                ${bottom.priceDifference > 0 ? '+' : ''}${formatNumber(bottom.priceDifference, 2)}% ${bottom.priceDifference > 0 ? '↑' : '↓'}
+            </span>
+            </td>
+        </tr>`;
+
+        const range = top.priceInJPY - bottom.priceInJPY;
+
+        maxRangeBody.innerHTML = `
+          <tr>
+            <td>${top.exchange}</td>
+            <td><img src="${countryFlags[top.country]}" alt="${top.country}" class="flag"></td>
+            <td>${formatNumber(top.priceInJPY)}</td>
+            <td class="highlight-spread">${formatNumber(range)}</td>
+            <td>${formatNumber(bottom.priceInJPY)}</td>
+            <td><img src="${countryFlags[bottom.country]}" alt="${bottom.country}" class="flag"></td>
+            <td>${bottom.exchange}</td>
+          </tr>`;
       } catch (error) {
         console.error("Error fetching prices:", error);
       }
