@@ -76,20 +76,20 @@ const exchanges = [
     api: "https://max-api.maicoin.com/api/v2/tickers/usdttwd",
     parseResponse: (data) => parseFloat(data.last),
   },
-  {
-    name: "Binance",
-    country: "Vietnam",
-    currency: "VND",
-    api: "https://api.binance.com/api/v3/ticker/price?symbol=USDTBVND",
-    parseResponse: (data) => parseFloat(data.price),
-  },
   // {
-  //   name: "BitcoinVN",
+  //   name: "Binance",
   //   country: "Vietnam",
   //   currency: "VND",
-  //   api: "https://bitcoinvn.io/api/v1/ticker",
-  //   parseResponse: (data) => parseFloat(data.USDT.last), // 仮定
+  //   api: "https://api.binance.com/api/v3/ticker/price?symbol=USDTBVND",
+  //   parseResponse: (data) => parseFloat(data.price),
   // },
+  {
+    name: "BitcoinVN",
+    country: "Vietnam",
+    currency: "VND",
+    api: "https://bitcoinvn.io/api/ticker/USDT/VND",
+    parseResponse: (data) => parseFloat(data.rate),
+  },
   // {
   //   name: "Mtobit",
   //   country: "Vietnam",
@@ -174,7 +174,7 @@ async function getUSDTPrices(exchangeRates) {
 // APIエンドポイント
 app.get("/api/prices", async (req, res) => {
   try {
-    // 為替レートを3回に分けて取得
+    // 為替レートを分けて取得
     const [usdJpyRate, krwJpyRate, vndJpyRate, twdJpyRate] = await Promise.all([
       getExchangeRate("USDJPY=X"),
       getExchangeRate("KRWJPY=X"),
